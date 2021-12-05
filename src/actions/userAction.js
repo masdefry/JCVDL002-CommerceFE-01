@@ -47,9 +47,9 @@ export const login = (email, password) => async (dispatch) => {
 
     dispatch({
       type: USER_LOGIN_SUCCESS,
-      payload: data,
+      payload: data.data,
     });
-    localStorage.setItem("userInfo", JSON.stringify(data));
+    localStorage.setItem("userInfo", JSON.stringify(data.data));
   } catch (error) {
     dispatch({
       type: USER_LOGIN_FAIL,
@@ -97,25 +97,22 @@ export const register = (email, password) => async (dispatch) => {
   }
 };
 
-export const getUserDetails = (id) => async (dispatch, getState) => {
+export const getUserDetails = () => async (dispatch, getState) => {
   try {
     dispatch({
       type: USER_DETAIL_REQUEST,
     });
-
-    const {
-      userLogin: { userInfo },
-    } = getState();
+    
+    const { userLogin } = getState();
 
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
+        "token" : `${userLogin.userInfo.token}`,
       },
     };
 
-    const { data } = await axios.get(`/api/user/${id}`, config);
-
+    const { data } = await axios.get(`http://localhost:5000/user/profile`, config);
     dispatch({
       type: USER_DETAIL_SUCCESS,
       payload: data,
@@ -161,6 +158,45 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
     });
 
     localStorage.setItem("userInfo", JSON.stringify(data));
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_PROFILE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const changePassword = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_UPDATE_PROFILE_REQUEST,
+    });
+
+    const { userLogin } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "token": userLogin.userInfo.token,
+      },
+    };
+
+    const { data } = await axios.patch('http://localhost:5000/user/changePassword', user, config);
+
+    dispatch({
+      type: USER_UPDATE_PROFILE_SUCCESS,
+      payload: data.data,
+    });
+
+    dispatch({
+      type: USER_LOGIN_SUCCESS,
+      payload: data.data,
+    });
+
+    localStorage.setItem("userInfo", JSON.stringify(data.data));
   } catch (error) {
     dispatch({
       type: USER_UPDATE_PROFILE_FAIL,

@@ -2,17 +2,16 @@ import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../../components/Message";
 import Loader from "../../../components/Loader";
-import { getUserDetails, updateUserProfile } from "../../../actions/userAction";
+import { getUserDetails, updateUserProfile, changePassword } from "../../../actions/userAction";
 import { useEffect, useState } from "react";
 import classes from "./Details.module.css";
 import DropNotif from "../../../components/Modal/Modal";
 import { USER_UPDATE_PROFILE_RESET } from "../../../constants/userConstants";
 
 const Details = ({ history }) => {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [message, setMessage] = useState(null);
 
   const dispatch = useDispatch();
@@ -29,32 +28,40 @@ const Details = ({ history }) => {
   const { success } = userUpdateProfile;
 
   useEffect(() => {
-    if (!user || !user.name) {
-      dispatch(getUserDetails("profile"));
-    } else {
-      setName(user.name);
-      setEmail(user.email);
-    }
-  }, [history, userInfo, dispatch, user]);
+    dispatch(getUserDetails());
+  }, [] );
+
+  // useEffect(() => {
+  //   // if (!user || !user.name) {
+  //   //   dispatch(getUserDetails("profile"));
+  //   // } else {
+  //   //   setName(user.name);
+  //   //   setEmail(user.email);
+  //   // }
+  //   // dispatch(getUserDetails("profile"));
+  //   console.log("BEWE userEffect history : " + history)
+  //   console.log("BEWE userEffect userInfo : " + JSON.stringify(userInfo))
+  //   console.log("BEWE userEffect user : " + JSON.stringify(user))
+  // }, [history, userInfo, dispatch, user]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmNewPassword) {
       setMessage("Password do not match");
     } else {
-      dispatch(updateUserProfile({ id: user._id, name, email, password }));
+      dispatch(changePassword({ password: password, newPassword: newPassword }));
     }
   };
+  
   return (
     <div className={classes.wrapper}>
       <h2>User Profile</h2>
       {success && (
         <DropNotif
-          heading="Update Profile"
-          text="Update Profile Successfully"
+          heading="Update Password"
+          text="Update Password Successfully"
           resetData={() => {
-            dispatch(getUserDetails("profile"));
-            dispatch({ type: USER_UPDATE_PROFILE_RESET });
+            dispatch(getUserDetails());
           }}
         ></DropNotif>
       )}
@@ -64,26 +71,6 @@ const Details = ({ history }) => {
       {updateLoading && <Loader />}
       {updateError && <Message variant="danger">{updateError}</Message>}
       <Form onSubmit={submitHandler}>
-        <Form.Group controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="name"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
         <Form.Group controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
@@ -92,15 +79,25 @@ const Details = ({ history }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
+        </Form.Group> 
+
+        <Form.Group controlId="newPassword">
+          <Form.Label>New Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Enter new password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          ></Form.Control>
         </Form.Group>
 
         <Form.Group controlId="confirmPassword">
-          <Form.Label>Confirm password</Form.Label>
+          <Form.Label>Confirm New password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Enter confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Enter confirm new password"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
