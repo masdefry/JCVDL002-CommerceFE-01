@@ -8,7 +8,6 @@ import Message from "../../../components/Message";
 import Loader from "../../../components/Loader";
 const RegisterScreen = ({ location, history }) => {
   const [email, setEmail] = useState("");
-  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState(null);
@@ -30,7 +29,7 @@ const RegisterScreen = ({ location, history }) => {
     if (password !== confirmPassword) {
       setMessage("Password do not match");
     } else {
-      dispatch(register(username, email, password));
+      dispatch(register(email, password));
     }
   };
   return (
@@ -52,11 +51,6 @@ const RegisterScreen = ({ location, history }) => {
           {message && <Message variant="danger">{message}</Message>}
           {loading && <Loader></Loader>}
           <form onSubmit={submitHandler}>
-            <input
-              type="text"
-              placeholder="Username"
-              onChange={(e) => setUserName(e.target.value)}
-            />
             <input
               type="email"
               placeholder="Email"

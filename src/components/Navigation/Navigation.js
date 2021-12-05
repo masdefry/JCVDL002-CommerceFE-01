@@ -119,7 +119,7 @@ const Navigation = () => {
                         <MobileButton>{userInfo.name}</MobileButton>
                       :
                         <NavLinks to={'/userProfile'}>
-                          <Button>{userInfo.name}</Button>
+                          <Button>{userInfo.data.email} </Button>
                         </NavLinks>
                     }       
                     <SubMenu>
