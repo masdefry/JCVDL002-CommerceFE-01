@@ -208,6 +208,43 @@ export const changePassword = (user) => async (dispatch, getState) => {
   }
 };
 
+export const forgotPassword = (user) => async (dispatch) => {
+  try {
+    dispatch({
+      type: USER_UPDATE_PROFILE_REQUEST,
+    });
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const { data } = await axios.patch('http://localhost:5000/user/forgotPassword', user, config);
+
+    dispatch({
+      type: USER_UPDATE_PROFILE_SUCCESS,
+      payload: data.data,
+    });
+
+    dispatch({
+      type: USER_LOGIN_SUCCESS,
+      payload: data.data,
+    });
+
+    localStorage.setItem("userInfo", JSON.stringify(data.data));
+
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_PROFILE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
 export const logout = () => (dispatch) => {
   localStorage.removeItem("userInfo");
   dispatch({ type: USER_LOGOUT });

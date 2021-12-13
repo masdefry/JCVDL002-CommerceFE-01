@@ -56,7 +56,7 @@ const LoginScreen = ({ location, history }) => {
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
             />
-            <a href="/" className={classes.rightSide}>Forgot Password?</a>
+            <a href="/forgotPassword" className={classes.rightSide}>Forgot Password?</a>
             <button type="submit">Log in</button>
           </form>
         </div>
