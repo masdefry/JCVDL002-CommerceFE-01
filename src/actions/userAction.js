@@ -208,6 +208,47 @@ export const changePassword = (user) => async (dispatch, getState) => {
   }
 };
 
+export const updateUser = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_UPDATE_PROFILE_REQUEST,
+    });
+
+    const { userLogin } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "token": userLogin.userInfo.token,
+      },
+    };
+
+    console.log("BUDI userLogin.userInfo.token : " + userLogin.userInfo.token)
+
+    const { data } = await axios.post('http://localhost:5000/user/updateUser', user, config);
+
+    dispatch({
+      type: USER_UPDATE_PROFILE_SUCCESS,
+      payload: data.data,
+    });
+
+    dispatch({
+      type: USER_LOGIN_SUCCESS,
+      payload: data.data,
+    });
+
+    localStorage.setItem("userInfo", JSON.stringify(data.data));
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_PROFILE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
 export const forgotPassword = (user) => async (dispatch) => {
   try {
     dispatch({
@@ -320,6 +361,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
   }
 };
 
+/**
 export const updateUser = (user) => async (dispatch, getState) => {
   try {
     dispatch({
@@ -357,3 +399,4 @@ export const updateUser = (user) => async (dispatch, getState) => {
     });
   }
 };
+**/

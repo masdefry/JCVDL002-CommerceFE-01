@@ -2,13 +2,16 @@ import { Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../../components/Message";
 import Loader from "../../../components/Loader";
-import { getUserDetails, updateUserProfile, changePassword } from "../../../actions/userAction";
+import { getUserDetails, updateUserProfile, changePassword, updateUser } from "../../../actions/userAction";
 import { useEffect, useState } from "react";
 import classes from "./Details.module.css";
 import DropNotif from "../../../components/Modal/Modal";
 import { USER_UPDATE_PROFILE_RESET } from "../../../constants/userConstants";
 
 const Details = ({ history }) => {
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
+  const [fullname, setFullname] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -49,7 +52,12 @@ const Details = ({ history }) => {
     if (newPassword !== confirmNewPassword) {
       setMessage("Password do not match");
     } else {
-      dispatch(changePassword({ password: password, newPassword: newPassword }));
+      if(fullname){
+        dispatch(updateUser({ fullname: fullname, dob: dob, gender: gender }));
+      }else{
+        dispatch(changePassword({ password: password, newPassword: newPassword }));
+      }
+      
     }
   };
   
@@ -71,6 +79,36 @@ const Details = ({ history }) => {
       {updateLoading && <Loader />}
       {updateError && <Message variant="danger">{updateError}</Message>}
       <Form onSubmit={submitHandler}>
+        <Form.Group controlId="fullname">
+          <Form.Label>Fullname</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter fullname"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
+        <Form.Group controlId="dob">
+          <Form.Label>Date of Birth</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter date of birth"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
+        <Form.Group controlId="gender">
+          <Form.Label>Gender</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter gender"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
         <Form.Group controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
