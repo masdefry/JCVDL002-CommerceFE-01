@@ -58,13 +58,10 @@ export const productTopReducer = (state = { products: [] }, action) => {
   }
 };
 
-export const productDetailReducer = (
-  state = { product: { reviews: [] } },
-  action
-) => {
+export const productDetailReducer = (state = { product: [] }, action) => {
   switch (action.type) {
-    case PRODUCT_DETAIL_REQUEST:
-      return { loading: true, product: { reviews: [] } };
+    // case PRODUCT_DETAIL_REQUEST:
+    //   return { loading: true, product: { reviews: [] } };
     case PRODUCT_DETAIL_SUCCESS:
       return { loading: false, product: action.payload };
     case PRODUCT_DETAIL_FAIL:
@@ -73,42 +70,70 @@ export const productDetailReducer = (
       return state;
   }
 };
+// export const productDetailReducer = (
+//   state = { product: { reviews: [] } },
+//   action
+// ) => {
+//   switch (action.type) {
+//     case PRODUCT_DETAIL_REQUEST:
+//       return { loading: true, product: { reviews: [] } };
+//     case PRODUCT_DETAIL_SUCCESS:
+//       return { loading: false, product: action.payload };
+//     case PRODUCT_DETAIL_FAIL:
+//       return { loading: false, error: action.payload };
+//     default:
+//       return state;
+//   }
+// };
 
 export const productAllReducer = (state = { products: [] }, action) => {
   switch (action.type) {
-    case PRODUCT_ALL_REQUEST:
-      return { loading: true, products: [] };
+    // case PRODUCT_ALL_REQUEST:
+    //   return { loading: true, products: [] };
     case PRODUCT_ALL_SUCCESS:
-      return {
-        loading: false,
-        products: action.payload.pageProducts,
-        pageCount: action.payload.pageCount,
-        electronicsCount: action.payload.electronicsCount,
-        menCount: action.payload.menCount,
-        womenCount: action.payload.womenCount,
-        sportsCount: action.payload.sportsCount,
-        babyCount: action.payload.babyCount,
-        automobileCount: action.payload.automobileCount,
-        booksCount: action.payload.booksCount,
-        gamesCount: action.payload.gamesCount,
-        blackCount: action.payload.blackCount,
-        blueCount: action.payload.blueCount,
-        redCount: action.payload.redCount,
-        greenCount: action.payload.greenCount,
-        brownCount: action.payload.brownCount,
-        hundreadCount: action.payload.hundreadCount,
-        okCount: action.payload.okCount,
-        tkCount: action.payload.tkCount,
-        thkCount: action.payload.thkCount,
-        fkCount: action.payload.fkCount,
-        fikCount: action.payload.fikCount,
-      };
+      return { loading: false, products: action.payload.products };
     case PRODUCT_ALL_FAIL:
       return { loading: false, error: action.payload };
     default:
       return state;
   }
 };
+
+// export const productAllReducer = (state = { products: [] }, action) => {
+//   switch (action.type) {
+//     case PRODUCT_ALL_REQUEST:
+//       return { loading: true, products: [] };
+//     case PRODUCT_ALL_SUCCESS:
+//       return {
+//         loading: false,
+//         products: action.payload.pageProducts,
+//         pageCount: action.payload.pageCount,
+//         electronicsCount: action.payload.electronicsCount,
+//         menCount: action.payload.menCount,
+//         womenCount: action.payload.womenCount,
+//         sportsCount: action.payload.sportsCount,
+//         babyCount: action.payload.babyCount,
+//         automobileCount: action.payload.automobileCount,
+//         booksCount: action.payload.booksCount,
+//         gamesCount: action.payload.gamesCount,
+//         blackCount: action.payload.blackCount,
+//         blueCount: action.payload.blueCount,
+//         redCount: action.payload.redCount,
+//         greenCount: action.payload.greenCount,
+//         brownCount: action.payload.brownCount,
+//         hundreadCount: action.payload.hundreadCount,
+//         okCount: action.payload.okCount,
+//         tkCount: action.payload.tkCount,
+//         thkCount: action.payload.thkCount,
+//         fkCount: action.payload.fkCount,
+//         fikCount: action.payload.fikCount,
+//       };
+//     case PRODUCT_ALL_FAIL:
+//       return { loading: false, error: action.payload };
+//     default:
+//       return state;
+//   }
+// };
 
 export const productForSellerReducer = (state = { products: [] }, action) => {
   switch (action.type) {
@@ -140,8 +165,8 @@ export const reviewCreateReducer = (state = {}, action) => {
 
 export const productDeleteReducer = (state = {}, action) => {
   switch (action.type) {
-    case PRODUCT_DELETE_REQUEST:
-      return { loading: true };
+    // case PRODUCT_DELETE_REQUEST:
+    //   return { loading: true };
     case PRODUCT_DELETE_SUCCESS:
       return { loading: false, success: true };
     case PRODUCT_DELETE_FAIL:
@@ -170,8 +195,8 @@ export const productUpdateReducer = (state = { product: {} }, action) => {
 
 export const productCreateReducer = (state = { product: {} }, action) => {
   switch (action.type) {
-    case PRODUCT_CREATE_REQUEST:
-      return { loading: true };
+    // case PRODUCT_CREATE_REQUEST:
+    //   return { loading: true };
     case PRODUCT_CREATE_SUCCESS:
       return { loading: false, success: true, product: action.payload };
     case PRODUCT_CREATE_FAIL:

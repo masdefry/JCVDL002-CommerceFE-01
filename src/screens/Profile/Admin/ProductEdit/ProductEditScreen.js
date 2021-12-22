@@ -30,7 +30,7 @@ const ProductEditScreen = ({ match, history }) => {
 
   const productDetail = useSelector((state) => state.productDetail);
   const { loading, error, product } = productDetail;
-  const currentId = product._id;
+  const currentId = product.idproducts;
 
   const productUpdate = useSelector((state) => state.productUpdate);
   const {
@@ -68,6 +68,7 @@ const ProductEditScreen = ({ match, history }) => {
       })
     );
   };
+
   const uploadFileHandler = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -120,6 +121,8 @@ const ProductEditScreen = ({ match, history }) => {
     setDescription(value);
   };
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   return (
     <>
       <Container className="mb-5">
@@ -149,7 +152,7 @@ const ProductEditScreen = ({ match, history }) => {
               <Form.Control
                 type="name"
                 placeholder="Enter your name"
-                value={name}
+                value={product.name}
                 onChange={(e) => setName(e.target.value)}
               ></Form.Control>
             </Form.Group>
@@ -238,7 +241,7 @@ const ProductEditScreen = ({ match, history }) => {
               Update
             </Button>
             <Link
-              to={`/product/${product._id}`}
+              to={`/product/${product.idproducts}`}
               className="btn btn-primary mt-3 ms-3"
             >
               Go to product

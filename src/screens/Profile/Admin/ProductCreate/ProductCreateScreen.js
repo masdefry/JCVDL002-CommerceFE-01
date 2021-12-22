@@ -12,93 +12,111 @@ import MarkdownEditor from "../../../../components/TextEditor/MarkdownEditor";
 
 const ProductCreateScreen = ({ match, history }) => {
   const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [image, setImage] = useState("");
-  const [brand, setBrand] = useState("");
-  const [category, setCategory] = useState("");
-  const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
+  const [idpackage, setidpackage] = useState(0);
+  const [idcategory, setidcategory] = useState(0);
+  const [is_main, setis_main] = useState(0);
+  const [image, setImage] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [uploadingDesc, setUploadingDesc] = useState(false);
 
   const dispatch = useDispatch();
-
   const productCreate = useSelector((state) => state.productCreate);
   const { loading, error, product, success } = productCreate;
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    dispatch(
-      createProduct({
-        name,
-        price,
-        image,
-        brand,
-        category,
-        description,
-        countInStock,
-      })
-    );
-  };
+  // const submitHandler = (e) => {
+  //   e.preventDefault();
 
-  const uploadFileHandler = async (e) => {
-    const file = e.target.files[0];
+  //   const formData = new FormData();
+
+  //   const files = image;
+
+  //   const obj = {
+  //     name: name,
+  //     description: description,
+  //     price: parseInt(price),
+  //     idpackage: parseInt(idpackage),
+  //     idcategory: parseInt(idcategory),
+  //     is_main: parseInt(is_main),
+  //   };
+
+  //   formData.append("data", JSON.stringify(obj));
+  //   formData.append("files", files);
+  //   setUploading(true);
+
+  //   console.log(formData);
+  //   dispatch(
+  //     createProduct({
+  //       formData,
+  //     })
+  //   );
+  // };
+
+  ////////////////Yang Error
+  // const submitHandler = (e) => {
+  //   e.preventDefault();
+  //   dispatch(
+  //     createProduct({
+  //       name: name,
+  //       description: description,
+  //       price: parseInt(price),
+  //       idpackage: parseInt(idpackage),
+  //       idcategory: parseInt(idcategory),
+  //       is_main: parseInt(is_main),
+  //       file: image,
+  //     })
+  //   );
+  // };
+
+  ////////////YANG Bisa
+  const submitHandler = async (e) => {
+    const file = image;
     const formData = new FormData();
-    formData.append("image", file);
+    console.log(file.name);
+    const obj = {
+      name: name,
+      description: description,
+      price: parseInt(price),
+      idpackage: parseInt(idpackage),
+      idcategory: parseInt(idcategory),
+      is_main: parseInt(is_main),
+    };
+
+    console.log(obj);
+    formData.append("data", JSON.stringify(obj));
+    formData.append("images", file);
     setUploading(true);
 
     try {
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      };
-      const { data } = await axios.post("/api/upload", formData, config);
-
-      setImage(data);
-      setUploading(false);
-    } catch (error) {
-      console.error(error);
-      setUploading(false);
-    }
-  };
-
-  const uploadImageForDesc = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-    setUploadingDesc(true);
-
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      };
       const { data } = await axios.post(
-        "/api/upload/descripion",
-        formData,
-        config
+        "http://localhost:2001/admin/add-product",
+        formData
       );
 
-      setDescription(description + "\n" + data);
-      setUploadingDesc(false);
+      setUploading(false);
     } catch (error) {
       console.error(error);
-      setUploadingDesc(false);
+      setUploading(false);
     }
   };
 
-  const onChange = (value) => {
-    setDescription(value);
+  const uplImgHandler = (e) => {
+    if (e.target.files[0]) {
+      setImage(e.target.files[0]);
+      let preview = document.getElementById("imgpreview");
+      preview.src = URL.createObjectURL(e.target.files[0]);
+    }
   };
+
   return (
     <>
       <Container className="mb-5">
         <Link to="/userProfile" className="btn btn-primary my-3">
           Go Back
         </Link>
+
         <h1>Create Product</h1>
+
         {loading && <Loader />}
         {error && <Message variant="danger">{error}</Message>}
         {success && (
@@ -116,14 +134,25 @@ const ProductCreateScreen = ({ match, history }) => {
         ) : error ? (
           <Message variant="danger">{error}</Message>
         ) : (
+          // MULAI DARI SINI ===========================================================
           <Form onSubmit={submitHandler}>
             <Form.Group controlId="name" className="my-3">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>New Product Name</Form.Label>
               <Form.Control
                 type="name"
-                placeholder="Enter your name"
+                placeholder="Enter Product Name.."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId="description">
+              <Form.Label>Product Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter the description..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               ></Form.Control>
             </Form.Group>
 
@@ -137,44 +166,87 @@ const ProductCreateScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
+            <Form.Group controlId="idpackage">
+              <Form.Label>Package Type</Form.Label>
+              <br />
+              <Form.Check inline>
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="idpackageRadio"
+                  id="package1"
+                  value={2}
+                  onChange={(e) => setidpackage(e.target.value)}
+                />
+                <label class="form-check-label" for="package1">
+                  250 gr
+                </label>
+              </Form.Check>
+
+              <Form.Check inline>
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="idpackageRadio"
+                  id="package2"
+                  value={3}
+                  onChange={(e) => setidpackage(e.target.value)}
+                />
+                <label class="form-check-label" for="package2">
+                  500 gr
+                </label>
+              </Form.Check>
+
+              <Form.Check inline>
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="idpackageRadio"
+                  id="package3"
+                  value={4}
+                  onChange={(e) => setidpackage(e.target.value)}
+                />
+                <label class="form-check-label" for="package3">
+                  1000 gr
+                </label>
+              </Form.Check>
+            </Form.Group>
+
             <Form.Group controlId="image" className="mb-3">
               <Form.Label>Image</Form.Label>
-              <Form.Control
+              {/* <Form.Control
                 className="mb-3"
                 type="text"
                 placeholder="Enter image URL"
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
-              ></Form.Control>
+              ></Form.Control> */}
               <Form.File
                 id="image-file"
                 custom
-                onChange={uploadFileHandler}
+                onChange={uplImgHandler}
               ></Form.File>
               {uploading && <Loader />}
             </Form.Group>
-            <Col xs={6} md={4}>
-              <Image className="img-fluid" src={image} rounded />
-            </Col>
 
-            <Form.Group controlId="brand">
-              <Form.Label>Brand</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter brand"
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+            <div>
+              Preview Image
+              <br />
+              <img id="imgpreview" width="150px" height="150px" />
+            </div>
 
-            <Form.Group controlId="countInStock">
-              <Form.Label>Quantity</Form.Label>
+            <Form.Group controlId="selection">
+              <Form.Label>Is it Main Picture</Form.Label>
               <Form.Control
-                type="number"
-                placeholder="Enter the quantity"
-                value={countInStock}
-                onChange={(e) => setCountInStock(e.target.value)}
-              ></Form.Control>
+                as="select"
+                placeholder="Main/Secondary Picture"
+                value={is_main}
+                onChange={(e) => setis_main(e.target.value)}
+              >
+                <option value=""></option>
+                <option value="1">Main Picture</option>
+                <option value="2">Secondary Picture</option>
+              </Form.Control>
             </Form.Group>
 
             <Form.Group controlId="selection">
@@ -182,34 +254,29 @@ const ProductCreateScreen = ({ match, history }) => {
               <Form.Control
                 as="select"
                 placeholder="Enter the category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                value={idcategory}
+                onChange={(e) => setidcategory(e.target.value)}
               >
                 <option value=""></option>
-                <option value="Books">Books</option>
-                <option value="Games">Games</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Men">Men Fashions</option>
-                <option value="Women">Women Fashions</option>
-                <option value="Baby">Baby</option>
-                <option value="Automobile">Automobile</option>
+                <option value="2">Beverage</option>
+                <option value="3">Roast Bean</option>
+                <option value="4">Drip</option>
+                <option value="5">Ready to Drink</option>
+                <option value="6">Green Bean</option>
+                <option value="7">Capsule</option>
+                <option value="8">Syrup</option>
+                <option value="9">Powder</option>
+                <option value="10">Tea</option>
+                <option value="11">Milk</option>
               </Form.Control>
-            </Form.Group>
-
-            <Form.Group className="mt-3" controlId="description">
-              <Form.Label>Description</Form.Label>
-              <Form.File
-                className="mb-3"
-                id="image-file"
-                custom
-                onChange={uploadImageForDesc}
-              ></Form.File>
-              {uploadingDesc && <Loader />}
-              <MarkdownEditor text={description} onChange={onChange} />
             </Form.Group>
 
             <Button className="mt-3" type="submit" variant="primary">
               Create product
+            </Button>
+
+            <Button className="mt-3" type="reset" variant="secondary">
+              Reset
             </Button>
           </Form>
         )}

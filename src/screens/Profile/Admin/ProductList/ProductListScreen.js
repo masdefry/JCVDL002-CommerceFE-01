@@ -15,21 +15,12 @@ import DropNotif from "../../../../components/Modal/Modal";
 import { PRODUCT_DELETE_RESET } from "../../../../constants/productConstants";
 
 const ProductListScreen = () => {
-  const [page, setPage] = useState(1);
+  var [page, setPage] = useState(1);
+
   const dispatch = useDispatch();
 
   const productAll = useSelector((state) => state.productAll);
-  const { loading, error, products, pageCount } = productAll;
-
-  const productForSeller = useSelector((state) => state.productForSeller);
-  const {
-    loading: loadingForSeller,
-    error: errorForSeller,
-    products: productsSeller,
-  } = productForSeller;
-
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
+  const { loading, error, products } = productAll;
 
   const productDelete = useSelector((state) => state.productDelete);
   const {
@@ -39,34 +30,63 @@ const ProductListScreen = () => {
   } = productDelete;
 
   useEffect(() => {
-    if (userInfo.isAdmin) {
-      dispatch(getProducts("", "", "", "", "", page));
-    } else if (userInfo.isSeller && !userInfo.isAdmin) {
-      dispatch(getProductsForSeller());
-    }
-  }, [dispatch, page, userInfo]);
+    dispatch(getProducts(page));
+  });
 
   const deleteHandler = (id) => {
     if (window.confirm("Are you sure?")) {
       dispatch(deleteProduct(id));
     }
   };
-  const pageHandler = (e, value) => {
-    setPage(value);
+
+  const prevPageHandler = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const nextPageHandler = () => {
+    setPage(page + 1);
+    console.log(page);
   };
 
   let productsFinal;
-  if (userInfo.isAdmin) {
-    if (products) {
-      productsFinal = products;
-    }
-  } else if (userInfo.isSeller) {
-    if (productsSeller) {
-      productsFinal = productsSeller;
-    }
-  }
+  productsFinal = products;
 
-  console.log(productsFinal);
+  const renderProducts = () => {
+    return productsFinal.map((product) => (
+      <>
+        <tr key={product.idproducts}>
+          <td>{product.idproducts}</td>
+          <td>{product.name}</td>
+          <td style={{ fontSize: "10px" }}>{product.description}</td>
+          <td>{product.price}</td>
+          <td>{product.idpackage}</td>
+          <td>{product.idpicture_by_product}</td>
+          <td>{product.idcategory}</td>
+          <td>
+            <img
+              src={"http://localhost:2001/" + product.url}
+              style={{ width: 120, height: 120 }}
+            />
+          </td>
+          <td>
+            <LinkContainer to={`/admin/product/${product.idproducts}/edit`}>
+              <Button variant="light" className="btn-sm">
+                <i className="fas fa-edit"></i>
+              </Button>
+            </LinkContainer>
+            <Button
+              variant="danger"
+              className="btn-sm"
+              onClick={() => deleteHandler(product.idproducts)}
+            >
+              <i className="fas fa-trash"></i>
+            </Button>
+          </td>
+        </tr>
+      </>
+    ));
+  };
+
   return (
     <Container className="mb-5">
       <Row className="align-items-center">
@@ -96,12 +116,14 @@ const ProductListScreen = () => {
               heading="Delete Product"
               text="Delete product successfully"
               resetData={() => {
-                if (userInfo.isAdmin) {
-                  dispatch(getProducts("", "", "", "", "", page));
-                } else if (userInfo.isSeller && !userInfo.isAdmin) {
-                  dispatch(getProductsForSeller());
-                }
-                dispatch({ type: PRODUCT_DELETE_RESET });
+                dispatch(getProducts(page));
+
+                // if (userInfo.isAdmin) {
+                //   dispatch(getProducts("", "", "", "", "", page));
+                // } else if (userInfo.isSeller && !userInfo.isAdmin) {
+                //   dispatch(getProductsForSeller());
+                // }
+                // dispatch({ type: PRODUCT_DELETE_RESET });
               }}
             />
           )}
@@ -110,48 +132,25 @@ const ProductListScreen = () => {
               <tr>
                 <th>ID</th>
                 <th>NAME</th>
+                <th>DESCRIPTION</th>
                 <th>PRICE</th>
+                <th>ID_PACK</th>
+                <th>ID_IMG</th>
                 <th>CATEGORY</th>
-                <th>BRAND</th>
-                <th>RATING</th>
-                <th>IN STOCK</th>
+                {/* nambah 1 , skip idproduct (double) skip is_main */}
+                <th>IMAGE</th>
               </tr>
             </thead>
-            <tbody>
-              {productsFinal &&
-                productsFinal.map((product) => (
-                  <tr key={product._id}>
-                    <td>{product._id}</td>
-                    <td>{product.name}</td>
-                    <td>${product.price}</td>
-                    <td>{product.category}</td>
-                    <td>{product.brand}</td>
-                    <td>{product.rating}</td>
-                    <td>{product.countInStock}</td>
-                    <td>
-                      <LinkContainer to={`/admin/product/${product._id}/edit`}>
-                        <Button variant="light" className="btn-sm">
-                          <i className="fas fa-edit"></i>
-                        </Button>
-                      </LinkContainer>
-                      <Button
-                        variant="danger"
-                        className="btn-sm"
-                        onClick={() => deleteHandler(product._id)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
+            <tbody>{renderProducts()}</tbody>
           </Table>
-          <Pagination
-            count={pageCount}
-            size="large"
-            page={page}
-            onChange={pageHandler}
-          />
+
+          <div className="text-left">Page {page}</div>
+          <button onClick={prevPageHandler} className="btn btn-dark">
+            {"<"}
+          </button>
+          <button onClick={nextPageHandler} className="btn btn-dark">
+            {">"}
+          </button>
         </>
       )}
     </Container>
