@@ -41,4 +41,10 @@
   .navItem {
     margin: 10px 10px;
   }
+
+  .navItem .active {
+    color: #fff;
+    background: #384aeb;
+    border-color: #384aeb;
+  }
 }

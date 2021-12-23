@@ -1,4 +1,4 @@
-import { Form } from "react-bootstrap";
+import { Form, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../../../components/Message";
 import Loader from "../../../components/Loader";
@@ -64,27 +64,13 @@ const Details = ({ history }) => {
   return (
     <div className={classes.wrapper}>
       <h2>User Profile</h2>
-      {success && (
-        <DropNotif
-          heading="Update Password"
-          text="Update Password Successfully"
-          resetData={() => {
-            dispatch(getUserDetails());
-          }}
-        ></DropNotif>
-      )}
-      {error && <Message variant="danger">{error}</Message>}
-      {message && <Message variant="danger">{message}</Message>}
-      {loading && <Loader />}
-      {updateLoading && <Loader />}
-      {updateError && <Message variant="danger">{updateError}</Message>}
       <Form onSubmit={submitHandler}>
         <Form.Group controlId="fullname">
           <Form.Label>Fullname</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter fullname"
-            value={fullname}
+            value={user.fullname}
             onChange={(e) => setFullname(e.target.value)}
           ></Form.Control>
         </Form.Group>
@@ -92,21 +78,29 @@ const Details = ({ history }) => {
         <Form.Group controlId="dob">
           <Form.Label>Date of Birth</Form.Label>
           <Form.Control
-            type="text"
+            type="date"
             placeholder="Enter date of birth"
-            value={dob}
+            value={user.dob}
             onChange={(e) => setDob(e.target.value)}
           ></Form.Control>
         </Form.Group>
-
-        <Form.Group controlId="gender">
+        <Form.Group>
           <Form.Label>Gender</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter gender"
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-          ></Form.Control>
+          <Col>
+            <Form.Check
+              type="radio"
+              label="Female"
+              // checked={user.gender === 'f' ? 'true' : ''}
+            ></Form.Check>
+          </Col>
+
+          <Col>
+            <Form.Check
+              type="radio"
+              label="Male"
+              // checked={user.gender === 'm' ? 'true' : ''}
+            ></Form.Check>
+          </Col>
         </Form.Group>
 
         <Form.Group controlId="password">

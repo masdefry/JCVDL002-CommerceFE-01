@@ -19,12 +19,16 @@ const UserProfile = ({ history }) => {
     if (!userInfo) {
       history.push("/login");
     }
+    if(localStorage.getItem("tabSelectionProfile")){
+      setSelection(localStorage.getItem("tabSelectionProfile"))
+    }
   }, [history, userInfo]);
 
   const [selection, setSelection] = useState("1");
 
   const changeSelection = (e) => {
     setSelection(e.target.getAttribute("data-selection"));
+    localStorage.setItem("tabSelectionProfile", e.target.getAttribute("data-selection"))
   };
 
   let selectionShow;
@@ -51,7 +55,7 @@ const UserProfile = ({ history }) => {
       <div className={classes["selection-container"]}>
         <ul className={classes.navSelection}>
           <li
-            className={classes.navItem}
+            className={(selection === "1") ? classes.navSelection : classes.navItem }
             data-selection="1"
             onClick={changeSelection}
           >
@@ -59,14 +63,14 @@ const UserProfile = ({ history }) => {
           </li>
           {userInfo && !userInfo.isAdmin && (
             <li
-              className={classes.navItem}
+              className={(selection === "2") ? classes.navSelection : classes.navItem }
               data-selection="2"
               onClick={changeSelection}
             >
               User Addresses
             </li>
           )}
-          {userInfo && !userInfo.isAdmin && (
+          {/* {userInfo && !userInfo.isAdmin && (
             <li
               className={classes.navItem}
               data-selection="3"
@@ -74,7 +78,7 @@ const UserProfile = ({ history }) => {
             >
               User Orders
             </li>
-          )}
+          )} */}
           {/* {userInfo && !userInfo.isAdmin && (
             <li
               className={classes.navItem}

@@ -36,6 +36,11 @@ import {
   getRequestByIdReducer,
   approveRequestReducer,
 } from "./reducers/requestReducer";
+import {
+  addAddressReducer,
+  listAddressReducer,
+  setDefaultAddressReducer
+}from "./reducers/addressReducer"
 
 const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
@@ -82,6 +87,9 @@ const reducer = combineReducers({
   getRequestSeller: getRequestSellerReducer,
   getRequestById: getRequestByIdReducer,
   approveRequest: approveRequestReducer,
+
+  // Address reducer :
+  listAddress : listAddressReducer,
 });
 
 const initialState = {

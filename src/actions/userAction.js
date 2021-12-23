@@ -24,6 +24,17 @@ import {
   USER_UPDATE_SUCCESS,
   USER_UPDATE_FAIL,
 } from "../constants/userConstants";
+import {
+  ADD_ADDRESS_FAIL,
+  ADD_ADDRESS_REQUEST,
+  ADD_ADDRESS_SUCCESS,
+  ADDRESS_SET_DEFAULT_FAIL,
+  ADDRESS_SET_DEFAULT_REQUEST,
+  ADDRESS_SET_DEFAULT_SUCCESS,
+  ADDRESS_LIST_REQUEST,
+  ADDRESS_LIST_SUCCESS,
+  ADDRESS_LIST_FAIL,
+}from "../constants/addressConstant";
 import axios from "axios";
 import { CART_RESET } from "../constants/cartConstant";
 
@@ -115,7 +126,7 @@ export const getUserDetails = () => async (dispatch, getState) => {
     const { data } = await axios.get(`http://localhost:5000/user/profile`, config);
     dispatch({
       type: USER_DETAIL_SUCCESS,
-      payload: data,
+      payload: data.data,
     });
   } catch (error) {
     dispatch({
@@ -361,37 +372,31 @@ export const deleteUser = (id) => async (dispatch, getState) => {
   }
 };
 
-/**
-export const updateUser = (user) => async (dispatch, getState) => {
+export const createAddress = (address) => async (dispatch, getState) => {
   try {
     dispatch({
-      type: USER_UPDATE_REQUEST,
+      type: ADD_ADDRESS_REQUEST,
     });
 
-    const {
-      userLogin: { userInfo },
-    } = getState();
+    const { userLogin } = getState();
 
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
+        "token": userLogin.userInfo.token,
       },
     };
 
-    const { data } = await axios.put(
-      `/api/user/updateUser/${user._id}`,
-      user,
-      config
-    );
+    const { data } = await axios.post('http://localhost:5000/user/createAddress', address, config);
 
     dispatch({
-      type: USER_UPDATE_SUCCESS,
+      type: ADD_ADDRESS_SUCCESS,
+      payload: data.data,
     });
-    dispatch({ type: USER_DETAIL_SUCCESS, payload: data });
+
   } catch (error) {
     dispatch({
-      type: USER_UPDATE_FAIL,
+      type: ADD_ADDRESS_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
@@ -399,4 +404,69 @@ export const updateUser = (user) => async (dispatch, getState) => {
     });
   }
 };
-**/
+
+export const updateDefaultAddress = (address) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: ADDRESS_SET_DEFAULT_REQUEST,
+    });
+
+    const { userLogin } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "token": userLogin.userInfo.token,
+      },
+    };
+
+    const { data } = await axios.patch('http://localhost:5000/user/updateDeafultAddress', address, config);
+
+    dispatch({
+      type: ADDRESS_SET_DEFAULT_SUCCESS,
+      payload: data.data,
+    });
+
+  } catch (error) {
+    dispatch({
+      type: ADDRESS_SET_DEFAULT_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const listAddresses = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: ADDRESS_LIST_REQUEST,
+    });
+
+    const { userLogin } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "token": userLogin.userInfo.token,
+      },
+    };
+    console.log("BEWE config : " + JSON.stringify(config))
+
+    const { data } = await axios.get(`http://localhost:5000/user/getCurrentAddress`, config);
+    console.log("BEWE result : " + JSON.stringify(data.data))
+    dispatch({
+      type: ADDRESS_LIST_SUCCESS,
+      payload: data.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: ADDRESS_LIST_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};

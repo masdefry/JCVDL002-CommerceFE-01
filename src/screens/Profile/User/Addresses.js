@@ -1,151 +1,123 @@
 import React, { useEffect, useState } from "react";
-import Message from "../../../components/Message";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
 import classes from "./Address.module.css";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
+import { Table, Button } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { updateUserProfile } from "../../../actions/userAction";
-import Loader from "../../../components/Loader";
-import { USER_UPDATE_PROFILE_RESET } from "../../../constants/userConstants";
-import { getUserDetails } from "../../../actions/userAction";
-import DropNotif from "../../../components/Modal/Modal";
+import { createAddress, listAddresses, updateDefaultAddress } from "../../../actions/userAction";
 
 const Addresses = () => {
   const dispatch = useDispatch();
-  const [fullName, setFullName] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [postCode, setPostCode] = useState("");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
 
-  const userDetail = useSelector((state) => state.userDetail);
-  const { loading, error, user } = userDetail;
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
-  const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
-  const updateLoading = userUpdateProfile.loading;
-  const updateError = userUpdateProfile.error;
-  const { success } = userUpdateProfile;
+  const listAddress = useSelector((state) => state.listAddress);
+  const { addresses } = listAddress;
 
   useEffect(() => {
-    if (user.shippingAddress.address) {
-      setAddress(user.shippingAddress.address);
-    }
-    if (user.shippingAddress.phone) {
-      setMobile(user.shippingAddress.phone);
-    }
-    if (user.shippingAddress.state) {
-      setState(user.shippingAddress.state);
-    }
-    if (user.shippingAddress.city) {
-      setCity(user.shippingAddress.city);
-    }
-    if (user.shippingAddress.fullname) {
-      setFullName(user.shippingAddress.fullname);
-    }
-    if (user.shippingAddress.postalCode) {
-      setPostCode(user.shippingAddress.postalCode);
-    }
+    dispatch(listAddresses())
   }, []);
 
   const saveAddressHandler = (e) => {
     e.preventDefault();
-    const updateUser = {
-      address,
-      city,
-      phone: mobile,
-      state,
-      postalCode: postCode,
-      fullname: fullName,
-    };
-    dispatch(updateUserProfile(updateUser));
+    const dataAddress = {
+      address: address,
+      is_default: "0",
+      idusers : userInfo.id
+    }
+    dispatch(createAddress(dataAddress));
+    setAddress("")
   };
 
-  const stateHandler = (e) => {
-    setState(e.target.value);
+  const setDefaultAddress = (id) => {
+    if (window.confirm("Are you sure?")) {
+      const dataAddress = {
+        idaddress: id
+      }
+      dispatch(updateDefaultAddress(dataAddress));
+    }
+    
   };
 
+  let addressTemp;
+  if (addresses) {
+    if (addresses.length === 0) {
+      addressTemp = (
+        <>
+          <Typography variant="h4" gutterBottom component="div">
+            Add a new Address
+          </Typography>
+          <form onSubmit={saveAddressHandler}>
+            <TextField
+              fullWidth
+              label="Address"
+              variant="filled"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+            <br /><br />
+            <Button type="submit" className="btn-sm btn-success">
+              Add new Address
+            </Button>
+            <br /><br />
+          </form>
+          <h1>No Address, make a new Address now!</h1>
+        </>
+      );
+    } else {
+      addressTemp = (
+        <div className={classes.wrapper}>
+          <Typography variant="h4" gutterBottom component="div">
+            Add a new Address
+          </Typography>
+          <form onSubmit={saveAddressHandler}>
+            <TextField
+              fullWidth
+              label="Address"
+              variant="filled"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+            <br /><br />
+            <Button type="submit" className="btn-sm btn-success">
+              Add new Address
+            </Button>
+            <br /><br />
+          </form>
+          <Table striped bordered hover responsive className="table-sm">
+            <thead>
+              <tr>
+                <th>NO</th>
+                <th>ADDRESS</th>
+                <th>IS DEFAULT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {addresses.map((address, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{address.address}</td>
+                  <td>
+                    <Button 
+                      className={address.is_default == 1 ? "btn-sm btn-danger" : " btn-sm  "} 
+                      disabled={address.is_default == 1}
+                      onClick={() => setDefaultAddress(address.idaddress)}>Set Default</Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      );
+    }
+  }
   return (
-    <div className={classes.wrapper}>
-      <Typography variant="h4" gutterBottom component="div">
-        Add a new Address
-      </Typography>
-      {success && (
-        <DropNotif
-          heading="Update Profile"
-          text="Update Profile Successfully"
-          resetData={() => {
-            dispatch(getUserDetails("profile"));
-            dispatch({ type: USER_UPDATE_PROFILE_RESET });
-          }}
-        ></DropNotif>
-      )}
-      {loading && <Loader />}
-      {updateLoading && <Loader />}
-      {error && <Message>{error}</Message>}
-      {updateError && <Message variant="danger">{updateError}</Message>}
-      <form onSubmit={saveAddressHandler}>
-        <TextField
-          fullWidth
-          label="Full Name"
-          variant="filled"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
-        <TextField
-          type="number"
-          fullWidth
-          label="Mobile Number"
-          variant="filled"
-          value={mobile}
-          onChange={(e) => setMobile(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Post Code"
-          variant="filled"
-          value={postCode}
-          onChange={(e) => setPostCode(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label="Address"
-          variant="filled"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <TextField
-          label="Town/City"
-          variant="filled"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
-        <FormControl sx={{ m: 1, minWidth: 200 }}>
-          <InputLabel id="demo-simple-select-autowidth-label">State</InputLabel>
-          <Select autoWidth value={state} label="State" onChange={stateHandler}>
-            <MenuItem value={"New South Wales"}>New South Wales</MenuItem>
-            <MenuItem value={"Queensland"}>Queensland</MenuItem>
-            <MenuItem value={"Northern Territory"}>Northern Territory</MenuItem>
-            <MenuItem value={"Western Australia"}>Western Australia</MenuItem>
-            <MenuItem value={"South Australia"}>South Australia</MenuItem>
-            <MenuItem value={"Vistoria"}>Victoria</MenuItem>
-            <MenuItem value={"Austraian Capital Territory"}>
-              Australian Capital Territory
-            </MenuItem>
-            <MenuItem value={"Tasmania"}>Tasmania</MenuItem>
-          </Select>
-        </FormControl>
-        <br />
-        <Button type="submit" variant="contained">
-          Add new Address
-        </Button>
-      </form>
-    </div>
+    <>
+      <div>{addressTemp}</div>
+    </>
   );
 };
 
