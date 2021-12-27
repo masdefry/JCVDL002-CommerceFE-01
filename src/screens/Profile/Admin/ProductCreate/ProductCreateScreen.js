@@ -10,7 +10,7 @@ import { PRODUCT_CREATE_RESET } from "../../../../constants/productConstants";
 import DropNotif from "../../../../components/Modal/Modal";
 import MarkdownEditor from "../../../../components/TextEditor/MarkdownEditor";
 
-const ProductCreateScreen = ({ match, history }) => {
+const ProductCreateScreen = ({ history }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
@@ -24,55 +24,10 @@ const ProductCreateScreen = ({ match, history }) => {
   const productCreate = useSelector((state) => state.productCreate);
   const { loading, error, product, success } = productCreate;
 
-  // const submitHandler = (e) => {
-  //   e.preventDefault();
-
-  //   const formData = new FormData();
-
-  //   const files = image;
-
-  //   const obj = {
-  //     name: name,
-  //     description: description,
-  //     price: parseInt(price),
-  //     idpackage: parseInt(idpackage),
-  //     idcategory: parseInt(idcategory),
-  //     is_main: parseInt(is_main),
-  //   };
-
-  //   formData.append("data", JSON.stringify(obj));
-  //   formData.append("files", files);
-  //   setUploading(true);
-
-  //   console.log(formData);
-  //   dispatch(
-  //     createProduct({
-  //       formData,
-  //     })
-  //   );
-  // };
-
-  ////////////////Yang Error
-  // const submitHandler = (e) => {
-  //   e.preventDefault();
-  //   dispatch(
-  //     createProduct({
-  //       name: name,
-  //       description: description,
-  //       price: parseInt(price),
-  //       idpackage: parseInt(idpackage),
-  //       idcategory: parseInt(idcategory),
-  //       is_main: parseInt(is_main),
-  //       file: image,
-  //     })
-  //   );
-  // };
-
-  ////////////YANG Bisa
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     const file = image;
     const formData = new FormData();
-    console.log(file.name);
+    // console.log(file.name);
     const obj = {
       name: name,
       description: description,
@@ -82,22 +37,13 @@ const ProductCreateScreen = ({ match, history }) => {
       is_main: parseInt(is_main),
     };
 
-    console.log(obj);
+    // console.log(obj);
     formData.append("data", JSON.stringify(obj));
     formData.append("images", file);
-    setUploading(true);
+    // setUploading(true);
 
-    try {
-      const { data } = await axios.post(
-        "http://localhost:2001/admin/add-product",
-        formData
-      );
-
-      setUploading(false);
-    } catch (error) {
-      console.error(error);
-      setUploading(false);
-    }
+    // console.log(formData.getAll(`images`));
+    dispatch(createProduct(formData));
   };
 
   const uplImgHandler = (e) => {
@@ -111,7 +57,7 @@ const ProductCreateScreen = ({ match, history }) => {
   return (
     <>
       <Container className="mb-5">
-        <Link to="/userProfile" className="btn btn-primary my-3">
+        <Link to="/admin/product/list" className="btn btn-primary my-3">
           Go Back
         </Link>
 
@@ -124,7 +70,7 @@ const ProductCreateScreen = ({ match, history }) => {
             heading="Create Product"
             text="Create Product Successfully"
             resetData={() => {
-              history.push(`/admin/product/${product._id}/edit`);
+              history.push(`/admin/product/${product.idproducts}/edit`);
               dispatch({ type: PRODUCT_CREATE_RESET });
             }}
           ></DropNotif>
@@ -134,7 +80,7 @@ const ProductCreateScreen = ({ match, history }) => {
         ) : error ? (
           <Message variant="danger">{error}</Message>
         ) : (
-          // MULAI DARI SINI ===========================================================
+          // MULAI DARI SINI ==================================================================================================
           <Form onSubmit={submitHandler}>
             <Form.Group controlId="name" className="my-3">
               <Form.Label>New Product Name</Form.Label>
@@ -214,13 +160,6 @@ const ProductCreateScreen = ({ match, history }) => {
 
             <Form.Group controlId="image" className="mb-3">
               <Form.Label>Image</Form.Label>
-              {/* <Form.Control
-                className="mb-3"
-                type="text"
-                placeholder="Enter image URL"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-              ></Form.Control> */}
               <Form.File
                 id="image-file"
                 custom

@@ -63,7 +63,7 @@ export const productDetailReducer = (state = { product: [] }, action) => {
     // case PRODUCT_DETAIL_REQUEST:
     //   return { loading: true, product: { reviews: [] } };
     case PRODUCT_DETAIL_SUCCESS:
-      return { loading: false, product: action.payload };
+      return { loading: false, error: false, product: action.payload };
     case PRODUCT_DETAIL_FAIL:
       return { loading: false, error: action.payload };
     default:
@@ -91,7 +91,10 @@ export const productAllReducer = (state = { products: [] }, action) => {
     // case PRODUCT_ALL_REQUEST:
     //   return { loading: true, products: [] };
     case PRODUCT_ALL_SUCCESS:
-      return { loading: false, products: action.payload.products };
+      return {
+        loading: false,
+        products: action.payload.products,
+      };
     case PRODUCT_ALL_FAIL:
       return { loading: false, error: action.payload };
     default:
@@ -180,8 +183,8 @@ export const productDeleteReducer = (state = {}, action) => {
 
 export const productUpdateReducer = (state = { product: {} }, action) => {
   switch (action.type) {
-    case PRODUCT_UPDATE_REQUEST:
-      return { loading: true };
+    // case PRODUCT_UPDATE_REQUEST:
+    //   return { loading: true };
     case PRODUCT_UPDATE_SUCCESS:
       return { loading: false, success: true, product: action.payload };
     case PRODUCT_UPDATE_FAIL:

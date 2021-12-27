@@ -10,7 +10,10 @@ import {
   getProducts,
   getProductsForSeller,
 } from "../../../../actions/productActions";
-import { deleteProduct } from "../../../../actions/productActions";
+import {
+  deleteProduct,
+  getProductDetail,
+} from "../../../../actions/productActions";
 import DropNotif from "../../../../components/Modal/Modal";
 import { PRODUCT_DELETE_RESET } from "../../../../constants/productConstants";
 
@@ -45,7 +48,6 @@ const ProductListScreen = () => {
 
   const nextPageHandler = () => {
     setPage(page + 1);
-    console.log(page);
   };
 
   let productsFinal;
@@ -65,7 +67,7 @@ const ProductListScreen = () => {
           <td>
             <img
               src={"http://localhost:2001/" + product.url}
-              style={{ width: 120, height: 120 }}
+              style={{ width: 150, height: 150 }}
             />
           </td>
           <td>
